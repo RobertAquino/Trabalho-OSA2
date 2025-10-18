@@ -21,7 +21,6 @@ public:
 private:
     // Métodos de alto nível para as funcionalidades
     void gerarArquivoDados();
-    //void gerarArquivoDadosBinario();
     void gerarArquivoIndice();
     void buscarRegistroPorMatricula();
     // --- Métodos privados para I/O (inspirados na classe Buffer) ---

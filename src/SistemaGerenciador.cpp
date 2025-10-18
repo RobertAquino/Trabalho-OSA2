@@ -1,18 +1,20 @@
 #include "../includes/SistemaGerenciador.hpp"
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 void SistemaGerenciador::iniciar()
 {
     int opcao;
     do
     {
-        std::cout << "Sistema Gerenciador de Alunos"<<std::endl;
-        std::cout <<"-------------------------------"<<std::endl;
-        std::cout << "1. Gerar Arquivo de Dados a partir do CSV"<<std::endl;
-        std::cout << "2 - Gerar Arquivo de indice"<<std::endl;
-        std::cout << "3 - Buscar Aluno Matrícula\n"<<std::endl;
-        std::cout << "0 - Sair"<<std::endl;
+        std::cout << "Sistema Gerenciador de Alunos" << std::endl;
+        std::cout << "-------------------------------" << std::endl;
+        std::cout << "1. Gerar Arquivo de Dados a partir do CSV" << std::endl;
+        std::cout << "2 - Gerar Arquivo de indice" << std::endl;
+        std::cout << "3 - Buscar Aluno Matrícula\n"
+                  << std::endl;
+        std::cout << "0 - Sair" << std::endl;
         std::cout << "Escolha uma opcao: ";
         std::cin >> opcao;
 
@@ -55,7 +57,7 @@ void SistemaGerenciador::gerarArquivoDados()
 
         // Se o campo da matricula não for vazia, salva
         std::getline(ss, campo, ',');
-        if (campo.empty())
+        if (!campo.empty())
         {
             aluno.matricula = std::stoi(campo);
         }
@@ -64,9 +66,9 @@ void SistemaGerenciador::gerarArquivoDados()
         std::getline(ss, campo, ',');
         std::snprintf(aluno.nome, sizeof(aluno.nome), "%s", campo.c_str());
         /*
-              snprinft faz uma copia do conteudo lido garantido que vai respeirar o tamanho maximo
-              Ex: Se a string tiver 52 char só vai copiar 49 e adicionar "/0"
-              std::snprintf(salva a copia, tamanho maximo a ser copiado, indica que e para fazer uma copia, copia o conteudo da variavel)
+        snprinft faz uma copia do conteudo lido garantido que vai respeitar o tamanho maximo
+        Ex: Se a string tiver 52 char só vai copiar 49 e adicionar "/0" no final
+        std::snprintf(salva a copia, tamanho maximo a ser copiado, indica que e para fazer uma copia, copia o conteudo da variavel)
         */
 
         std::getline(ss, campo, ',');
@@ -75,6 +77,33 @@ void SistemaGerenciador::gerarArquivoDados()
         // Salva no arquivo binario
         escreverRegistro(fileBin, aluno);
     }
+    fileCSV.close();
+    fileBin.close();
+}
+
+void SistemaGerenciador::gerarArquivoIndice()
+{
+    std::ifstream fileBin(arquivoDados);
+    std::ofstream fileIndice(arquivoIndice);
+    long offset = 0;
+    Aluno aluno;
+    std::vector<Indice> indices;
+    
+    
+    while(lerRegistro(fileBin, aluno, offset))
+    {  
+        Indice indice;
+        indice.matricula = aluno.matricula;
+        indice.byte_offset = offset;
+        offset += sizeof(aluno.nome) + sizeof(aluno.matricula) + 4;
+        indices.push_back(indice);
+    }
+    //Função de ordenar
+
+    //Grava cada registro do vetor em um arquivo
+}
+void SistemaGerenciador::buscarRegistroPorMatricula()
+{
 }
 
 void SistemaGerenciador::escreverRegistro(std::ofstream &out, const Aluno &aluno)
@@ -85,4 +114,15 @@ void SistemaGerenciador::escreverRegistro(std::ofstream &out, const Aluno &aluno
 // Essa função vai servir para os indices
 bool SistemaGerenciador::lerRegistro(std::ifstream &in, Aluno &aluno, long offset)
 {
+   in.seekg(offset);
+
+   if(!in)
+   return false;
+
+    // Tenta ler o tamanho do próximo registro. Se não conseguir retorna false.
+   if (!in.read(reinterpret_cast<char *>(&aluno.matricula), sizeof(aluno.matricula)))
+   {
+      return false;
+   }
+   return true;
 }
