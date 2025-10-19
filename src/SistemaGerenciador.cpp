@@ -1,4 +1,5 @@
 #include "../includes/SistemaGerenciador.hpp"
+#include "../includes/HeapSort.hpp"
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -83,25 +84,33 @@ void SistemaGerenciador::gerarArquivoDados()
 
 void SistemaGerenciador::gerarArquivoIndice()
 {
-    std::ifstream fileBin(arquivoDados);
+    std::ifstream fileBin(arquivoDados, std::ios::binary);
     std::ofstream fileIndice(arquivoIndice);
     long offset = 0;
     Aluno aluno;
     std::vector<Indice> indices;
-    
-    
-    while(lerRegistro(fileBin, aluno, offset))
-    {  
+    Heap heap;
+
+    while (lerRegistro(fileBin, aluno, offset))
+    {
         Indice indice;
         indice.matricula = aluno.matricula;
         indice.byte_offset = offset;
         offset += sizeof(aluno.nome) + sizeof(aluno.matricula) + 4;
         indices.push_back(indice);
     }
-    //Função de ordenar
 
-    //Grava cada registro do vetor em um arquivo
+    // Ordena o vetor
+    heap.HeapSort(indices);
+
+    // Grava cada registro do vetor em um arquivo
+
+    for (int i = 0; i < indices.size() - 1; i++)
+    {
+        fileIndice << indices[i].matricula << ' ' << indices[i].byte_offset << '\n';
+    }
 }
+
 void SistemaGerenciador::buscarRegistroPorMatricula()
 {
 }
@@ -114,15 +123,15 @@ void SistemaGerenciador::escreverRegistro(std::ofstream &out, const Aluno &aluno
 // Essa função vai servir para os indices
 bool SistemaGerenciador::lerRegistro(std::ifstream &in, Aluno &aluno, long offset)
 {
-   in.seekg(offset);
+    in.seekg(offset);
 
-   if(!in)
-   return false;
+    if (!in)
+        return false;
 
     // Tenta ler o tamanho do próximo registro. Se não conseguir retorna false.
-   if (!in.read(reinterpret_cast<char *>(&aluno.matricula), sizeof(aluno.matricula)))
-   {
-      return false;
-   }
-   return true;
+    if (!in.read(reinterpret_cast<char *>(&aluno.matricula), sizeof(aluno.matricula)))
+    {
+        return false;
+    }
+    return true;
 }

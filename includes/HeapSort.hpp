@@ -6,55 +6,48 @@
 
 class Heap
 {
+public:
+    void HeapSort(std::vector<Indice> &indices)
+    {
+        int n = indices.size();
+
+        // Constrói o heap máximo
+        for (int i = n / 2 - 1; i >= 0; i--)
+            desce(indices, n, i);
+
+        // Extrai elementos do heap um por um
+        for (int i = n - 1; i >= 1; i--)
+        {
+            troca(indices, 0, i);     // Move o maior para o fim
+            desce(indices, i, 0);     // Restaura heap nas posições restantes
+        }
+    }
 
 private:
-
-void HeapSort(std::vector<Indice> indices)
-{
-    
-    for(int i = 1; i < indices.size(); i++)
+    void desce(std::vector<Indice> &indices, int tamanho, int no)
     {
-        sobe(indices, i);
+        int maior = no;
+        int fe = 2 * no + 1;
+        int fd = 2 * no + 2;
+
+        if (fe < tamanho && indices[fe].byte_offset > indices[maior].byte_offset)
+            maior = fe;
+        if (fd < tamanho && indices[fd].byte_offset > indices[maior].byte_offset)
+            maior = fd;
+
+        if (maior != no)
+        {
+            troca(indices, no, maior);
+            desce(indices, tamanho, maior);
+        }
     }
-    for(int i = indices.size()-1; i >= 1; i--)
+
+    void troca(std::vector<Indice> &indices, int i, int j)
     {
-        troca(indices, 0, i);
-        desce(indices, 0);
+        Indice temp = indices[i];
+        indices[i] = indices[j];
+        indices[j] = temp;
     }
-
-}
-void sobe(std::vector<Indice> indices, int no)
-{
-    if(no == 0)
-    return;
-    
-    int pai = (no - 1)/2;
-    if(indices[no] < indices[pai])
-    {
-        troca(indices, no, pai);
-        sobe(indices, pai);
-    }
-}
-
-void desce(std::vector<Indice> indices, int no)
-{
-    int fe = 2 * no + 1;
-    int fd = 2 * no + 2;
-
-    int min = no;
-
-    if((fd < indices.size()) && (indices[fd].byte_offset < indices[min].byte_offset))
-    min = fd;
-
-    if((fe < indices.size()) && (indices[fe].byte_offset < indices[min].byte_offset))
-    min = fe;
-
-    if(min != no)
-    {
-        troca(indices, min, no);
-        desce(indices, indices.size(), min);
-    }
-}
-
 };
+
 #endif
