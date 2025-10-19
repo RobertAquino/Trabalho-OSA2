@@ -1,5 +1,6 @@
 #include "../includes/SistemaGerenciador.hpp"
 #include "../includes/HeapSort.hpp"
+#include "../includes/Aluno.hpp"
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -13,8 +14,7 @@ void SistemaGerenciador::iniciar()
         std::cout << "-------------------------------" << std::endl;
         std::cout << "1. Gerar Arquivo de Dados a partir do CSV" << std::endl;
         std::cout << "2 - Gerar Arquivo de indice" << std::endl;
-        std::cout << "3 - Buscar Aluno Matrícula\n"
-                  << std::endl;
+        std::cout << "3 - Buscar Aluno Matrícula\n"<< std::endl;
         std::cout << "0 - Sair" << std::endl;
         std::cout << "Escolha uma opcao: ";
         std::cin >> opcao;
@@ -53,28 +53,8 @@ void SistemaGerenciador::gerarArquivoDados()
 
     while (std::getline(fileCSV, linha))
     {
-        std::stringstream ss(linha);
-        std::string campo;
-
-        // Se o campo da matricula não for vazia, salva
-        std::getline(ss, campo, ',');
-        if (!campo.empty())
-        {
-            aluno.matricula = std::stoi(campo);
-        }
-
-        // Nome e Curso são char. Então temos que garantir que não ultrapasse o tamanho maximo
-        std::getline(ss, campo, ',');
-        std::snprintf(aluno.nome, sizeof(aluno.nome), "%s", campo.c_str());
-        /*
-        snprinft faz uma copia do conteudo lido garantido que vai respeitar o tamanho maximo
-        Ex: Se a string tiver 52 char só vai copiar 49 e adicionar "/0" no final
-        std::snprintf(salva a copia, tamanho maximo a ser copiado, indica que e para fazer uma copia, copia o conteudo da variavel)
-        */
-
-        std::getline(ss, campo, ',');
-        std::snprintf(aluno.curso, sizeof(aluno.nome), "%s", campo.c_str());
-
+        aluno.parser(linha);
+        
         // Salva no arquivo binario
         escreverRegistro(fileBin, aluno);
     }
@@ -113,6 +93,35 @@ void SistemaGerenciador::gerarArquivoIndice()
 
 void SistemaGerenciador::buscarRegistroPorMatricula()
 {
+    std::ifstream fileIndice(arquivoIndice);
+    std::ifstream fileBin(arquivoDados, std::ios::binary);
+    int matricula;
+    std::vector<Indice> indices;
+    std::string linha;
+
+    while (std::getline(fileIndice, linha))
+    {
+
+        std::stringstream ss(linha);
+        std::string campo;
+        Indice indice;
+        std::getline(ss, campo, ' ');
+        if (!campo.empty())
+        {
+            indice.matricula = stoi(campo);
+        }
+        std::getline(ss, campo, ' ');
+        if (!campo.empty())
+        {
+            indice.byte_offset = stoi(campo);
+        }
+        indices.push_back(indice);
+    }
+
+    std::cout << "Busque uma matricula:" << std::endl;
+    std::cin >> matricula;
+
+    busca(matricula,fileIndice);
 }
 
 void SistemaGerenciador::escreverRegistro(std::ofstream &out, const Aluno &aluno)
@@ -129,9 +138,47 @@ bool SistemaGerenciador::lerRegistro(std::ifstream &in, Aluno &aluno, long offse
         return false;
 
     // Tenta ler o tamanho do próximo registro. Se não conseguir retorna false.
-    if (!in.read(reinterpret_cast<char *>(&aluno.matricula), sizeof(aluno.matricula)))
-    {
+    if (!in.read(reinterpret_cast<char *>(&aluno), sizeof(aluno)))
+    { 
         return false;
     }
+    
     return true;
+}
+
+void SistemaGerenciador::busca(int matricula, std::ifstream &in)
+{
+    std::vector<Indice> indices;
+    int ini = 0;
+    int fim = indices.size();
+    int meio;
+    Aluno aluno;
+    SistemaGerenciador gerenciador;
+
+    
+    while (fim > ini)
+    {
+        meio = (ini + fim) / 2;
+        
+        if (indices[meio].matricula == matricula)
+        {
+            if (lerRegistro(in, aluno, indices[meio].byte_offset))
+            {
+                aluno.display();
+            }
+            else
+            {
+                std::cout << "Aluno não encontrado!!!" << std::endl;
+            }
+            return;
+        }
+        else if (indices[meio].matricula < matricula)
+        {
+            ini = meio;
+        }
+        else
+        {
+            fim = meio;
+        }
+    }
 }

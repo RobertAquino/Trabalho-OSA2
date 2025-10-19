@@ -16,7 +16,9 @@ private:
 public:
     // Construtor e método principal do menu
     SistemaGerenciador(const std::string &csv, const std::string &dados, const std::string &indice);
+    SistemaGerenciador() = default;
     void iniciar();
+    void busca(int matricula, std::ifstream &in);
 
 private:
     // Métodos de alto nível para as funcionalidades
