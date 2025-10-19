@@ -21,17 +21,17 @@ int main()
         {
         case 1:
             fileCSV = "data/alunos_mil.csv";
-            std::cout<<std::endl;
+            std::cout << std::endl;
             valido = true;
             break;
         case 2:
-            fileCSV = "data/alunos_100mil";
-            std::cout<<std::endl;
+            fileCSV = "data/alunos_100mil.csv";
+            std::cout << std::endl;
             valido = true;
             break;
         case 3:
-            fileCSV = "data/alunos_1milhao";
-            std::cout<<std::endl;
+            fileCSV = "data/alunos_1milhao.csv";
+            std::cout << std::endl;
             valido = true;
             break;
 
@@ -39,7 +39,7 @@ int main()
             std::cout << "Numero invalido" << std::endl;
             break;
         }
-    } while(!valido);
+    } while (!valido);
 
     SistemaGerenciador sistema(fileCSV, "data/alunos.dat", "data/indices.dat");
 

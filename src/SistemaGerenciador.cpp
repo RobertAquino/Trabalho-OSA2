@@ -91,6 +91,9 @@ void SistemaGerenciador::gerarArquivoIndice()
     {
         fileIndice << indices[i].matricula << ' ' << indices[i].byte_offset << '\n';
     }
+
+    fileIndice.close();
+    fileBin.close();
 }
 
 void SistemaGerenciador::buscarRegistroPorMatricula()
@@ -124,6 +127,9 @@ void SistemaGerenciador::buscarRegistroPorMatricula()
     std::cin >> matricula;
 
     busca(matricula, fileBin, indices);
+
+    fileIndice.close();
+    fileBin.close();
 }
 
 void SistemaGerenciador::escreverRegistro(std::ofstream &out, const Aluno &aluno)
@@ -151,12 +157,11 @@ bool SistemaGerenciador::lerRegistro(std::ifstream &in, Aluno &aluno, long offse
 void SistemaGerenciador::busca(int matricula, std::ifstream &in, std::vector<Indice> &indices)
 {
     int ini = 0;
-    int fim = indices.size();
+    int fim = indices.size() - 1;
     int meio;
     Aluno aluno;
-    SistemaGerenciador gerenciador;
 
-    while (fim > ini)
+    while (ini <= fim)
     {
         meio = (ini + fim) / 2;
 
@@ -178,5 +183,5 @@ void SistemaGerenciador::busca(int matricula, std::ifstream &in, std::vector<Ind
         }
     }
 
-    std::cout << "Matirucla não encontrada!!!" << std::endl;
+    std::cout << "Matricula não encontrada!!!" << std::endl;
 }
