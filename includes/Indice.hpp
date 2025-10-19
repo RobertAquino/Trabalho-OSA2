@@ -9,6 +9,7 @@ class Indice
 public:
     int matricula;
     long byte_offset; // Posição do registro no arquivo de dados
+    //HeapSort
     void organizar(std::vector<Indice> &indices);
 
 

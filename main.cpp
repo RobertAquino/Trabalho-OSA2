@@ -3,7 +3,7 @@
 
 int main()
 {
-    // Define os nomes dos arquivos
+    // Escolhe o arquivo
     int opcao;
     bool valido = false;
     std::string fileCSV;

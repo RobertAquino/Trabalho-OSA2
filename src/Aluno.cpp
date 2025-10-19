@@ -15,18 +15,16 @@ void Aluno::parser(std::string linha)
         matricula = stoi(campo);
     }
 
-    // Nome e Curso são char. Então temos que garantir que não ultrapasse o tamanho maximo
+    //Mome
     std::getline(ss, campo, ',');
+    //Copia o conteudo de "campo" para "nome",respeitando o tamanho do campo "nome"
     std::snprintf(nome, sizeof(nome), "%s", campo.c_str());
-    /*
-    snprinft faz uma copia do conteudo lido garantido que vai respeitar o tamanho maximo
-    Ex: Se a string tiver 52 char só vai copiar 49 e adicionar "/0" no final
-    std::snprintf(salva a copia, tamanho maximo a ser copiado, indica que e para fazer uma copia, copia o conteudo da variavel)
-    */
 
+    //Curso
     std::getline(ss, campo, ',');
     std::snprintf(curso, sizeof(curso), "%s", campo.c_str());
 }
+//Imprime todas as informações do aluno
 void Aluno::display()
 {
     std::cout << matricula << " - " << nome << " - " << curso << std::endl;
