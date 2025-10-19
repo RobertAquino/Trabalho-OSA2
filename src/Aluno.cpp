@@ -25,7 +25,7 @@ void Aluno::parser(std::string linha)
         */
 
         std::getline(ss, campo, ',');
-        std::snprintf(curso, sizeof(nome), "%s", campo.c_str());
+        std::snprintf(curso, sizeof(curso), "%s", campo.c_str());
 }
 void Aluno::display()
 {

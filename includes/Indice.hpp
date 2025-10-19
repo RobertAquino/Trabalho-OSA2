@@ -1,7 +1,7 @@
 #ifndef INDICE_HPP
 #define INDICE_HPP
 
-#include <vector>;
+#include <vector>
 #include "Aluno.hpp"
 
 class Indice

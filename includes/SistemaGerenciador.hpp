@@ -15,10 +15,14 @@ private:
 
 public:
     // Construtor e método principal do menu
-    SistemaGerenciador(const std::string &csv, const std::string &dados, const std::string &indice);
+    SistemaGerenciador(const std::string &csv, const std::string &dados, const std::string &indice){
+        arquivoCSV = csv;
+        arquivoDados = dados;
+        arquivoIndice = indice;
+    };
     SistemaGerenciador() = default;
     void iniciar();
-    void busca(int matricula, std::ifstream &in);
+    void busca(int matricula, std::ifstream &in, std::vector<Indice> &indices);
 
 private:
     // Métodos de alto nível para as funcionalidades
